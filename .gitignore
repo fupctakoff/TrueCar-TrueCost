@@ -1,0 +1,6 @@
+venv/
+media/
+.env
+migrations/
+usrs.txt
+notes.txt
