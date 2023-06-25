@@ -1,11 +1,7 @@
-from django.conf import settings
-from django.conf.urls.static import static
 from django.urls import path
-from . import views
+from .views import ListOfAuctions
+
 
 urlpatterns = [
-    path('', views.index)
+    path('', ListOfAuctions.as_view(), name='home_page'),
 ]
-
-if settings.DEBUG:
-    urlpatterns += static(settings.MEDIA_URL, documet_root=settings.MEDIA_ROOT)
