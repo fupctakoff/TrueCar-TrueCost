@@ -1,24 +1,34 @@
 from django.db import models
+from django.urls import reverse_lazy
 
 
 class Car(models.Model):
     """Машина"""
     release_date = models.IntegerField(verbose_name='Год выпуска')
     mileage = models.IntegerField(verbose_name='Пробег, км.')
-    first_price = models.DecimalField(max_digits=9, decimal_places=0, blank=True, default=10000, verbose_name='Стартовая цена, руб.')
+    first_price = models.DecimalField(max_digits=9, decimal_places=0, blank=True, default=10000,
+                                      verbose_name='Стартовая цена, руб.')
     sell_price = models.DecimalField(max_digits=9, decimal_places=0, verbose_name='Минимальная цена продажи, руб.')
     slug = models.SlugField()
     car_model = models.ForeignKey('CarModel', on_delete=models.CASCADE, verbose_name='Марка и модель')
     engine = models.ForeignKey('Engine', on_delete=models.CASCADE, verbose_name='Объем и мощность двигателя')
-    transmission = models.ForeignKey('Transmission', on_delete=models.SET_NULL, null=True, verbose_name='Коробка передач')
+    transmission = models.ForeignKey('Transmission', on_delete=models.SET_NULL, null=True,
+                                     verbose_name='Коробка передач')
     wheel = models.ForeignKey('Wheel', on_delete=models.SET_NULL, null=True, verbose_name='Привод')
-    photo = models.ForeignKey('Images', on_delete=models.CASCADE, blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     description = models.CharField(blank=True, default='Some description', verbose_name='Описание')
 
-
     def __str__(self):
-        return f"{self.car_model.manufacturer.name} {self.car_model.name}"
+        return f"{self.car_model.manufacturer.name} {self.car_model.name} {self.slug}"
+
+    def get_absolute_url(self):
+        return reverse_lazy('car_detail', kwargs={'slug': self.slug})
+
+    # надо оптимизировать
+    def get_first_photo(self):
+        if self.images_set.all():
+            return self.images_set.all().first().image.url
+        return None
 
     class Meta:
         verbose_name = 'Автомобиль'
@@ -116,7 +126,9 @@ class EngineType(models.Model):
 
 class Images(models.Model):
     """Много фотографий для одной машины"""
+    car = models.ForeignKey('Car', on_delete=models.SET_NULL, blank=True, null=True)
     image = models.ImageField(upload_to="carpics/%Y/%m/%d")
+
     @property
     def photo_url(self):
         if self.image and hasattr(self.image, 'url'):

@@ -3,30 +3,29 @@
 
 {% block content %}
 <div class="container">
-<div class="row">
-    {% for i in object_list %}
-    <div class="col-sm-6">
-        <div class="card cardbsz" >
-        <div class="card-ph">
-                {% if i.photo %}
-                <img src="{{ i.photo.photo_url }}" class="card-ph" alt="...">
-            {% else %}
-                <img src="{% static 'images/photo_not_found.png' %}" class="card-ph" alt="...">
-            {% endif %}
-        </div>
+    <div class="row">
+        {% for i in object_list %}
+        <div class="col-sm-6 p-4">
+            <div class="card">
+                <div class="card-ph">
+                    {% if i.get_first_photo %}
+                    <img src="{{ i.get_first_photo }}" class="card-ph" alt="...">
+                    {% else %}
+                    <img src="{% static 'images/photo_not_found.png' %}" class="card-ph" alt="...">
+                    {% endif %}
+                </div>
 
-            <div class="card-body">
-                <h5 class="card-title">{{ i.car_model.manufacturer }} {{ i.car_model.name }} {{ i.release_date }} г.в.</h5>
-                <p class="card-text">Продано за <b>{{ i.first_price }}</b></p>
-                <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-        <a href="#" class="btn btn-primary mx-1">Подробнее</a>
-    </div>
+                <div class="card-body">
+                    <h5 class="card-title">{{ i.car_model.manufacturer }} {{ i.car_model.name }} {{ i.release_date }}
+                        г.в.</h5>
+                    <p class="card-text">Продано за <b>{{ i.first_price }}</b></p>
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <a href="{{ i.get_absolute_url }}" class="btn btn-primary mx-1">Подробнее</a>
+                    </div>
+                </div>
             </div>
         </div>
+        {% endfor %}
     </div>
-    {% endfor %}
-
 </div>
-</div>
-
 {% endblock content %}

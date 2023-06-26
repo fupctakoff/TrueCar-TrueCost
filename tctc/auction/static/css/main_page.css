@@ -1,0 +1,19 @@
+.card-ph {
+    padding: 0px 0px 60% 0px;
+    overflow: hidden;
+    position: relative;
+}
+
+.card-ph img {
+    width: 100%;
+    height: auto%;
+    object-fit: cover;
+    overflow: hidden;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+.detail-card-ph {
+    width: 100%;
+}
