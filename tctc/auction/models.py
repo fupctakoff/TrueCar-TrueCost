@@ -24,12 +24,6 @@ class Car(models.Model):
     def get_absolute_url(self):
         return reverse_lazy('car_detail', kwargs={'slug': self.slug})
 
-    # надо оптимизировать
-    def get_first_photo(self):
-        if self.images_set.all():
-            return self.images_set.all().first().image.url
-        return None
-
     class Meta:
         verbose_name = 'Автомобиль'
         verbose_name_plural = 'Автомобиль'
@@ -130,6 +124,6 @@ class Images(models.Model):
     image = models.ImageField(upload_to="carpics/%Y/%m/%d")
 
     @property
-    def photo_url(self):
+    def url(self):
         if self.image and hasattr(self.image, 'url'):
             return self.image.url
