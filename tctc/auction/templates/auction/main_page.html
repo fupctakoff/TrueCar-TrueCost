@@ -8,6 +8,7 @@
         {% for i in object_list %}
 
         {% get_images_by_car car_pk=i.pk as gt %}
+        {% if i.sold %}
         <div class="col-sm-6 p-4">
             <div class="card">
                 <div class="card-ph">
@@ -23,11 +24,16 @@
                         г.в.</h5>
                     <p class="card-text">Продано за <b>{{ i.first_price }}</b></p>
                     <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        {% if i.get_absolute_url %}
                         <a href="{{ i.get_absolute_url }}" class="btn btn-primary mx-1">Подробнее</a>
+                        {% else %}
+                        <button type="button" class="btn btn-light">Light</button>
+                        {% endif %}
                     </div>
                 </div>
             </div>
         </div>
+        {% endif %}
         {% endfor %}
     </div>
 </div>

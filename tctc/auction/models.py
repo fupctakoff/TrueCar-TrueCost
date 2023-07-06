@@ -17,6 +17,7 @@ class Car(models.Model):
     wheel = models.ForeignKey('Wheel', on_delete=models.SET_NULL, null=True, verbose_name='Привод')
     created_at = models.DateTimeField(auto_now_add=True)
     description = models.CharField(blank=True, default='Some description', verbose_name='Описание')
+    sold = models.BooleanField(verbose_name='Было ли продано', default=False)
 
     def __str__(self):
         return f"{self.car_model.manufacturer.name} {self.car_model.name} {self.slug}"
@@ -32,8 +33,8 @@ class Car(models.Model):
 
 class Transmission(models.Model):
     """Коробка передач, тип(по ключу) и количество ступеней"""
-    speed_cnt = models.IntegerField()
-    type = models.ForeignKey('TransmissionType', on_delete=models.CASCADE)
+    speed_cnt = models.IntegerField(verbose_name='Количество ступеней')
+    type = models.ForeignKey('TransmissionType', on_delete=models.CASCADE, verbose_name='Тип коробки передач')
 
     def __str__(self):
         return f"{self.type.name}, количество ступеней: {self.speed_cnt}"
@@ -45,7 +46,7 @@ class Transmission(models.Model):
 
 class TransmissionType(models.Model):
     """Тип коробки передач"""
-    name = models.CharField(max_length=255)
+    name = models.CharField(max_length=255, verbose_name='Тип коробки передач')
 
     def __str__(self):
         return self.name
@@ -57,7 +58,7 @@ class TransmissionType(models.Model):
 
 class Wheel(models.Model):
     """Привод автомобиля"""
-    name = models.CharField(max_length=255)
+    name = models.CharField(max_length=255, verbose_name='Тип привода')
 
     def __str__(self):
         return self.name
@@ -69,8 +70,8 @@ class Wheel(models.Model):
 
 class CarModel(models.Model):
     """Модель машины"""
-    name = models.CharField(max_length=255)
-    manufacturer = models.ForeignKey('Manufacturer', on_delete=models.CASCADE)
+    name = models.CharField(max_length=255, verbose_name='Модель автомобиля')
+    manufacturer = models.ForeignKey('Manufacturer', on_delete=models.CASCADE, verbose_name='Производитель автомобиля')
 
     def __str__(self):
         return f"{self.manufacturer.name} {self.name}"
@@ -82,7 +83,7 @@ class CarModel(models.Model):
 
 class Manufacturer(models.Model):
     """Производитель машины"""
-    name = models.CharField(max_length=255)
+    name = models.CharField(max_length=255, verbose_name='Производитель автомобиля')
 
     def __str__(self):
         return self.name
@@ -94,9 +95,9 @@ class Manufacturer(models.Model):
 
 class Engine(models.Model):
     """Объем и мощность двигателя"""
-    volume = models.FloatField()
-    power = models.IntegerField()
-    type = models.ForeignKey('EngineType', on_delete=models.CASCADE)
+    volume = models.FloatField(verbose_name='Объем двигателя, л.')
+    power = models.IntegerField(verbose_name='Мощность двигателя, л.с.')
+    type = models.ForeignKey('EngineType', on_delete=models.CASCADE, verbose_name='Тип двигателя')
 
     def __str__(self):
         return f"{self.type.name}, {self.volume} л., {self.power} л.с."
@@ -108,7 +109,7 @@ class Engine(models.Model):
 
 class EngineType(models.Model):
     """Тип двигателя"""
-    name = models.CharField(max_length=255)
+    name = models.CharField(max_length=255, verbose_name='Тип двигателя')
 
     def __str__(self):
         return self.name
@@ -120,8 +121,8 @@ class EngineType(models.Model):
 
 class Images(models.Model):
     """Много фотографий для одной машины"""
-    car = models.ForeignKey('Car', on_delete=models.SET_NULL, blank=True, null=True)
-    image = models.ImageField(upload_to="carpics/%Y/%m/%d")
+    car = models.ForeignKey('Car', on_delete=models.SET_NULL, blank=True, null=True, verbose_name='Автомобиль')
+    image = models.ImageField(upload_to="carpics/%Y/%m/%d", verbose_name='Изображение')
 
     @property
     def url(self):

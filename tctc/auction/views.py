@@ -1,9 +1,17 @@
-from django.http import HttpResponse
-from django.shortcuts import render
-from django.views.generic import ListView, DetailView
+import os
 
-from .forms import NameForm
-from .models import Car, Images
+from django.conf import settings
+from django.core.files.storage import FileSystemStorage
+from django.http import HttpResponse, HttpResponseRedirect
+from django.shortcuts import render
+from django.urls import reverse
+from django.views.generic import ListView, DetailView
+from formtools.wizard.views import SessionWizardView
+
+from .forms import ManufacturerAndModelWizard, EngineAndEngineTypeWizard, \
+    TransmissionAndTransmissionTypeWizard, WheelTypeWizard, CarWizard
+from .models import Car, Images, CarModel, Engine, Transmission, Wheel
+from random import randint
 
 
 # class ListOfAuctions(ListView):
@@ -49,17 +57,68 @@ class DetailOfAuctions(DetailView):
                                                                            'wheel', 'car_model__manufacturer')
 
 
-def sell_car(request):
-    """В разработке"""
-    if request.method == 'POST':
-        # если пост запрос - логика
-        form = NameForm(request.POST)
-        print(f'request: {request}')
-        if form.is_valid():
-            print(form.cleaned_data)
-            print(form.is_bound)
-            return HttpResponse('thx')
-    else:
-        # если гет запрос - пустая форма
-        form = NameForm()
-    return render(request, template_name='auction/sell_form.html', context={'form': form})
+# def sell_car(request):
+#     """В разработке"""
+#     if request.method == 'POST':
+#         # если пост запрос - логика
+#         form = NameForm(request.POST)
+#         print(f'request: {request}')
+#         if form.is_valid():
+#             print(form.cleaned_data)
+#             print(form.is_bound)
+#             return HttpResponse('thx')
+#     else:
+#         # если гет запрос - пустая форма
+#         form = NameForm()
+#     return render(request, template_name='auction/sell_form.html', context={'form': form})
+
+
+class FormWizard(SessionWizardView):
+    """Пятиступенчатая форма добавления авто для продажи"""
+    form_list = [ManufacturerAndModelWizard, EngineAndEngineTypeWizard, TransmissionAndTransmissionTypeWizard,
+                 WheelTypeWizard, CarWizard]
+    template_name = 'auction/sell_form_wizard.html'
+    file_storage = FileSystemStorage(location=os.path.join(settings.MEDIA_ROOT, 'form-photos-storage'))
+
+    def done(self, form_list, **kwargs):
+        """Сохранение проверенных данных"""
+        model_and_manufacturer = form_list[0].cleaned_data
+        engine_and_engine_type = form_list[1].cleaned_data
+        transmission_wizard = form_list[2].cleaned_data
+        wheel_wizard = form_list[3].cleaned_data
+        car_wizard = form_list[4].cleaned_data
+
+        if len(CarModel.objects.filter(name=model_and_manufacturer['name'])) == 0:
+            # проверка модели авто на уникальность
+            step1 = CarModel.objects.create(
+                name=model_and_manufacturer['name'],
+                manufacturer=model_and_manufacturer['manufacturer']
+            )
+        else:
+            step1 = None
+        step2 = Engine.objects.create(
+            volume=engine_and_engine_type['volume'],
+            power=engine_and_engine_type['power'],
+            type=engine_and_engine_type['type']
+        )
+        step3 = Transmission.objects.create(
+            speed_cnt=transmission_wizard['speed_cnt'],
+            type=transmission_wizard['type'],
+        )
+        step5 = Car.objects.create(
+            release_date=car_wizard['release_date'],
+            mileage=car_wizard['mileage'],
+            sell_price=car_wizard['sell_price'],
+            first_price=0,
+            description=car_wizard['description'],
+            slug='{}-{}-{}-{}'.format(model_and_manufacturer['manufacturer'], model_and_manufacturer['name'],
+                                      car_wizard['release_date'], randint(1, 1000000)),
+            car_model=(
+                lambda no_name_func: step1 if step1 else CarModel.objects.get(name=model_and_manufacturer['name']))(
+                step1),
+            engine=step2,
+            transmission=step3,
+            wheel=Wheel.objects.get(name=wheel_wizard['name'])
+        )
+
+        return HttpResponseRedirect(reverse('home_page'))

@@ -1,0 +1,39 @@
+{% extends "auction/base.html" %}
+{% load static %}
+
+
+{% block content %}
+<p xmlns="http://www.w3.org/1999/html">Шаг {{ wizard.steps.step1 }} из {{ wizard.steps.count }}</p>
+<form action="" method="post">{% csrf_token %}
+<table>
+{{ wizard.management_form }}
+{% if wizard.form.forms %}
+    {{ wizard.form.management_form }}
+    {% for form in wizard.form.forms %}
+        {{ form.as_table }}
+    {% endfor %}
+{% else %}
+    {{ wizard.form }}
+{% endif %}
+</table>
+{% if wizard.steps.prev %}
+<button name="wizard_goto_step" type="submit" value="{{ wizard.steps.first }}">Первый шаг</button>
+<button name="wizard_goto_step" type="submit" value="{{ wizard.steps.prev }}">Предыдущий шаг</button>
+{% endif %}
+<input type="submit" value="Далее"/>
+</form>
+{% endblock %}
+
+
+<form>
+    <div class="mb-3">
+        <label for="exampleInputEmail1" class="form-label">Email address</label>
+        <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
+        <div id="emailHelp" class="form-text">We'll never share your email with anyone else.</div>
+    </div>
+    <div class="mb-3">
+        <label for="exampleInputPassword1" class="form-label">Password</label>
+        <input type="password" class="form-control" id="exampleInputPassword1">
+    </div>
+    <button type="submit" class="btn btn-primary">Submit</button>
+</form>
