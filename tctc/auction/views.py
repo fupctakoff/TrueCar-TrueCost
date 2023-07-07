@@ -4,12 +4,12 @@ from django.conf import settings
 from django.core.files.storage import FileSystemStorage
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
-from django.urls import reverse
-from django.views.generic import ListView, DetailView
+from django.urls import reverse, reverse_lazy
+from django.views.generic import ListView, DetailView, CreateView
 from formtools.wizard.views import SessionWizardView
 
 from .forms import ManufacturerAndModelWizard, EngineAndEngineTypeWizard, \
-    TransmissionAndTransmissionTypeWizard, WheelTypeWizard, CarWizard
+    TransmissionAndTransmissionTypeWizard, WheelTypeWizard, CarWizard, OurUserCreationForm
 from .models import Car, Images, CarModel, Engine, Transmission, Wheel
 from random import randint
 
@@ -55,22 +55,6 @@ class DetailOfAuctions(DetailView):
         return Car.objects.filter(slug=self.kwargs['slug']).select_related('car_model', 'engine', 'engine__type',
                                                                            'transmission__type', 'transmission',
                                                                            'wheel', 'car_model__manufacturer')
-
-
-# def sell_car(request):
-#     """В разработке"""
-#     if request.method == 'POST':
-#         # если пост запрос - логика
-#         form = NameForm(request.POST)
-#         print(f'request: {request}')
-#         if form.is_valid():
-#             print(form.cleaned_data)
-#             print(form.is_bound)
-#             return HttpResponse('thx')
-#     else:
-#         # если гет запрос - пустая форма
-#         form = NameForm()
-#     return render(request, template_name='auction/sell_form.html', context={'form': form})
 
 
 class FormWizard(SessionWizardView):
@@ -122,3 +106,10 @@ class FormWizard(SessionWizardView):
         )
 
         return HttpResponseRedirect(reverse('home_page'))
+
+
+class RegisterBaseUser(CreateView):
+    """Создание рядового пользователя"""
+    form_class = OurUserCreationForm
+    template_name = 'auction/register_users.html'
+    success_url = reverse_lazy('home_page')

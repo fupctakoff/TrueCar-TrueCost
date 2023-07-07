@@ -1,39 +1,42 @@
 {% extends "auction/base.html" %}
 {% load static %}
 
+{% block title %} Хочу участвовать в аукционе {% endblock title %}
 
 {% block content %}
-<p xmlns="http://www.w3.org/1999/html">Шаг {{ wizard.steps.step1 }} из {{ wizard.steps.count }}</p>
-<form action="" method="post">{% csrf_token %}
-<table>
-{{ wizard.management_form }}
-{% if wizard.form.forms %}
-    {{ wizard.form.management_form }}
-    {% for form in wizard.form.forms %}
-        {{ form.as_table }}
-    {% endfor %}
-{% else %}
-    {{ wizard.form }}
-{% endif %}
-</table>
-{% if wizard.steps.prev %}
-<button name="wizard_goto_step" type="submit" value="{{ wizard.steps.first }}">Первый шаг</button>
-<button name="wizard_goto_step" type="submit" value="{{ wizard.steps.prev }}">Предыдущий шаг</button>
-{% endif %}
-<input type="submit" value="Далее"/>
-</form>
+<div class="container-fluid col-md-6 p-4">
+    <p>Шаг {{ wizard.steps.step1 }} из {{ wizard.steps.count }}</p>
+    <form action="" method="post">{% csrf_token %}
+        {{ wizard.management_form }}
+        {% for i in wizard.form %}
+        <div class="mb-3">
+            <label for="exampleInputEmail1" class="form-label">{{ i.label }}</label>
+            {{ i }}
+            {{ i.errors }}
+        </div>
+        {% endfor %}
+        <div class="container text-center">
+            <div class="row">
+                {% if wizard.steps.prev %}
+                <div class="col">
+                    <button type="submit" class="btn btn-primary" value="{{ wizard.steps.first }}">Первый шаг</button>
+                </div>
+                <div class="col">
+                    <button type="submit" class="btn btn-primary" value="{{ wizard.steps.prev }}">Предыдущий шаг</button>
+                </div>
+                {% endif %}
+
+
+                <div class="col">
+                    {% if wizard.steps.next %}
+                    <button type="submit" class="btn btn-primary">Далее</button>
+                    {% else %}
+                    <button type="submit" class="btn btn-primary">Завершить</button>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
 {% endblock %}
 
-
-<form>
-    <div class="mb-3">
-        <label for="exampleInputEmail1" class="form-label">Email address</label>
-        <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
-        <div id="emailHelp" class="form-text">We'll never share your email with anyone else.</div>
-    </div>
-    <div class="mb-3">
-        <label for="exampleInputPassword1" class="form-label">Password</label>
-        <input type="password" class="form-control" id="exampleInputPassword1">
-    </div>
-    <button type="submit" class="btn btn-primary">Submit</button>
-</form>

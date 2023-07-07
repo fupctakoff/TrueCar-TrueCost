@@ -16,7 +16,7 @@ class Car(models.Model):
                                      verbose_name='Коробка передач')
     wheel = models.ForeignKey('Wheel', on_delete=models.SET_NULL, null=True, verbose_name='Привод')
     created_at = models.DateTimeField(auto_now_add=True)
-    description = models.CharField(blank=True, default='Some description', verbose_name='Описание')
+    description = models.CharField(blank=True, default='Ваше описание', verbose_name='Описание')
     sold = models.BooleanField(verbose_name='Было ли продано', default=False)
 
     def __str__(self):
