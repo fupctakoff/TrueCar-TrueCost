@@ -1,15 +1,17 @@
 import os
 
 from django.conf import settings
+from django.contrib.auth import logout
+from django.contrib.auth.views import LoginView
 from django.core.files.storage import FileSystemStorage
 from django.http import HttpResponse, HttpResponseRedirect
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.urls import reverse, reverse_lazy
 from django.views.generic import ListView, DetailView, CreateView
 from formtools.wizard.views import SessionWizardView
 
 from .forms import ManufacturerAndModelWizard, EngineAndEngineTypeWizard, \
-    TransmissionAndTransmissionTypeWizard, WheelTypeWizard, CarWizard, OurUserCreationForm
+    TransmissionAndTransmissionTypeWizard, WheelTypeWizard, CarWizard, OurUserCreationForm, OurUserAuthenticationForm
 from .models import Car, Images, CarModel, Engine, Transmission, Wheel
 from random import randint
 
@@ -33,7 +35,7 @@ def main_page_list_of_auctions(request):
     context = {
         'object_list': object_list,
         'car_images': car_images,
-        'title': 'Титульник',
+        'title': 'Проведенные аукционы',
         'list_of_car_pk': list_of_car_pk
     }
     return render(request, template_name='auction/main_page.html', context=context)
@@ -113,3 +115,17 @@ class RegisterBaseUser(CreateView):
     form_class = OurUserCreationForm
     template_name = 'auction/register_users.html'
     success_url = reverse_lazy('home_page')
+
+
+class LoginBaseUser(LoginView):
+    """Авторизация пользователя"""
+    template_name = 'auction/login_users.html'
+    form_class = OurUserAuthenticationForm
+
+    def get_success_url(self):
+        return reverse('sell_car')
+
+
+def logout_user(request):
+    logout(request)
+    return redirect('home_page')

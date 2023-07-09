@@ -5,6 +5,7 @@
 
 {% block content %}
 <div class="container-fluid col-md-6 p-4">
+    {% if request.user.is_authenticated %}
     <p>Шаг {{ wizard.steps.step1 }} из {{ wizard.steps.count }}</p>
     <form action="" method="post">{% csrf_token %}
         {{ wizard.management_form }}
@@ -22,7 +23,8 @@
                     <button type="submit" class="btn btn-primary" value="{{ wizard.steps.first }}">Первый шаг</button>
                 </div>
                 <div class="col">
-                    <button type="submit" class="btn btn-primary" value="{{ wizard.steps.prev }}">Предыдущий шаг</button>
+                    <button type="submit" class="btn btn-primary" value="{{ wizard.steps.prev }}">Предыдущий шаг
+                    </button>
                 </div>
                 {% endif %}
 
@@ -37,6 +39,17 @@
             </div>
         </div>
     </form>
+    {% else %}
+    <div>
+        <p class="h5">Для того, чтобы продать автомобиль, вам необходимо войти в аккаунт</p>
+
+        <div></div>
+        <a class="btn btn-outline-success m-2" type="submit" href="{% url 'register' %}">Зарегистрироваться</a>
+    </div>
+    <div>
+        <a class="btn btn-outline-success m-2" type="submit" href="{% url 'login' %}">Войти</a>
+    </div>
+    {% endif %}
 </div>
 {% endblock %}
 
