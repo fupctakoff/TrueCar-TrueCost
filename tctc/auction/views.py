@@ -1,7 +1,7 @@
 import os
 
 from django.conf import settings
-from django.contrib.auth import logout
+from django.contrib.auth import logout, login
 from django.contrib.auth.views import LoginView
 from django.core.files.storage import FileSystemStorage
 from django.http import HttpResponse, HttpResponseRedirect
@@ -107,14 +107,18 @@ class FormWizard(SessionWizardView):
             wheel=Wheel.objects.get(name=wheel_wizard['name'])
         )
 
-        return HttpResponseRedirect(reverse('home_page'))
+        return HttpResponseRedirect(reverse('success'))
 
 
 class RegisterBaseUser(CreateView):
     """Создание рядового пользователя"""
     form_class = OurUserCreationForm
     template_name = 'auction/register_users.html'
-    success_url = reverse_lazy('home_page')
+
+    def form_valid(self, form):
+        user = form.save()
+        login(self.request, user)
+        return redirect('home_page')
 
 
 class LoginBaseUser(LoginView):
@@ -129,3 +133,7 @@ class LoginBaseUser(LoginView):
 def logout_user(request):
     logout(request)
     return redirect('home_page')
+
+
+def success_page(request):
+    return render(request, template_name='auction/success.html')

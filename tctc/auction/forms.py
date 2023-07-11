@@ -78,11 +78,10 @@ class WheelTypeWizard(forms.ModelForm):
 
 class CarWizard(forms.ModelForm):
     """Шаг 5"""
-    captcha = CaptchaField()
 
     class Meta:
         model = Car
-        fields = ['release_date', 'mileage', 'sell_price', 'description', 'captcha']
+        fields = ['release_date', 'mileage', 'sell_price', 'description']
         widgets = {
             'release_date': forms.TextInput(attrs={'class': 'form-control', 'type': 'text'}),
             'mileage': forms.TextInput(attrs={'class': 'form-control', 'type': 'text'}),
