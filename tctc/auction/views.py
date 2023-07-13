@@ -3,10 +3,12 @@ import os
 from django.conf import settings
 from django.contrib.auth import logout, login
 from django.contrib.auth.views import LoginView
+from django.core.cache import cache
 from django.core.files.storage import FileSystemStorage
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render, redirect
 from django.urls import reverse, reverse_lazy
+from django.views.decorators.cache import cache_page
 from django.views.generic import ListView, DetailView, CreateView
 from formtools.wizard.views import SessionWizardView
 
@@ -25,12 +27,15 @@ from random import randint
 #     def get_queryset(self):
 #         return Car.objects.all().select_related('car_model', 'engine', 'car_model__manufacturer')
 
+@cache_page(10)
 def main_page_list_of_auctions(request):
     """Список всех проданных автомобилей"""
     list_of_car_pk = []
     object_list = Car.objects.all()[:10].select_related('car_model', 'engine', 'car_model__manufacturer')
+
     for car in object_list:
         list_of_car_pk.append(car.pk)
+
     car_images = Images.objects.filter(car__in=list_of_car_pk).select_related('car')
     context = {
         'object_list': object_list,
