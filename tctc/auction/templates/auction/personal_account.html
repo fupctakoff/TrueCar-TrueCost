@@ -1,0 +1,17 @@
+{% extends 'auction/base.html' %}
+{% load static %}
+{% load auction_tags %}
+{% block title %} {{ title }} {% endblock title %}
+{% block content %}
+<div class="container-fluid">
+    <p class="h6">Личный кабинет</p>
+
+    <p class="lead">Имя пользователя: {{ user.username }} </p>
+    <p class="lead">Является ли персоналом: {{ user.is_staff }} </p>
+    <a href="{% url 'logout' %}">
+        <button type="button" class="btn btn-outline-secondary" id="input-group-button-left">Выйти из личного кабинета
+        </button>
+    </a>
+
+</div>
+{% endblock content %}

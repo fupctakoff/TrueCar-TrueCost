@@ -3,13 +3,13 @@ import os
 from django.conf import settings
 from django.contrib.auth import logout, login
 from django.contrib.auth.views import LoginView
-from django.core.cache import cache
 from django.core.files.storage import FileSystemStorage
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponseRedirect
 from django.shortcuts import render, redirect
-from django.urls import reverse, reverse_lazy
+from django.urls import reverse
 from django.views.decorators.cache import cache_page
-from django.views.generic import ListView, DetailView, CreateView
+from django.views.generic import DetailView, CreateView
+from django.contrib.auth.models import User
 from formtools.wizard.views import SessionWizardView
 
 from .forms import ManufacturerAndModelWizard, EngineAndEngineTypeWizard, \
@@ -132,7 +132,7 @@ class LoginBaseUser(LoginView):
     form_class = OurUserAuthenticationForm
 
     def get_success_url(self):
-        return reverse('sell_car')
+        return reverse('personal_page')
 
 
 def logout_user(request):
@@ -140,5 +140,15 @@ def logout_user(request):
     return redirect('home_page')
 
 
+def lk(request):
+    """Личный кабинет пользователя"""
+    return render(request, template_name='auction/personal_account.html',
+                  context={'user': User.objects.get(id=request.user.id)})
+
+
 def success_page(request):
     return render(request, template_name='auction/success.html')
+
+
+def info_page(request):
+    return render(request, template_name='auction/info_page.html')

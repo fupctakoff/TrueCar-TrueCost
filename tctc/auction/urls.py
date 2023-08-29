@@ -2,7 +2,7 @@ from django.urls import path, include
 from django.views.decorators.cache import cache_page
 
 from .views import main_page_list_of_auctions, DetailOfAuctions, FormWizard, RegisterBaseUser, LoginBaseUser, \
-    logout_user, success_page
+    logout_user, success_page, info_page, lk
 
 urlpatterns = [
     path('', main_page_list_of_auctions, name='home_page'),
@@ -12,5 +12,7 @@ urlpatterns = [
     path('login-user/', LoginBaseUser.as_view(), name='login'),
     path('logout-user/', logout_user, name='logout'),
     path('success/', success_page, name='success'),
+    path('info-page/', info_page, name='info_page'),
+    path('personal-page/', lk, name='personal_page'),
     #path('personal-area/', , name='lk'),
 ]
